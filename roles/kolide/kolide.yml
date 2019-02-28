@@ -39,7 +39,7 @@
     remote_src: yes
 
 - name: Intialize Kolide database
-  shell: /usr/local/bin/linux/fleet_linux_amd64 prepare db --config /etc/kolide/kolide.yml
+  shell: /usr/local/bin/linux/fleet prepare db --config /etc/kolide/kolide.yml
 
 - name: Create kolide user
   user:
