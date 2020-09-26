@@ -1,0 +1,25 @@
+####################################################################
+# Install/Setup MongoDB
+####################################################################
+- name: Add Mongo GPG key
+  apt_key:
+    keyserver: "{{ mongo_gpg_key_url }}"
+    id: "{{ mongo_gpg_key_id }}"
+
+- name: Add Mongo repo
+  apt_repository:
+    repo: "{{ mongo_repo_url }}"
+    state: present
+
+- name: Install MongoDB
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - mongodb-org
+
+- name: Start Mongo service
+  service:
+    name: mongod.service
+    state: restarted
+    enabled: yes

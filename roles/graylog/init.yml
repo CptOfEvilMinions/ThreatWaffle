@@ -1,0 +1,37 @@
+####################################################################
+# Setup hostname
+####################################################################
+- name: Set hostname
+  hostname:
+    name: '{{ graylog_hostname }}.{{ base_domain }}'
+
+####################################################################
+#  Setup Timedatectl
+####################################################################
+- name: Set time to {{ timezone }}
+  shell: timedatectl set-ntp on && timedatectl set-timezone {{ timezone }}
+
+####################################################################
+# Apt update
+####################################################################
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+    
+- name: Update all packages to the latest version
+  apt:
+    upgrade: dist
+
+####################################################################
+# Install software
+####################################################################
+- name: Install software
+  package:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - apt-transport-https
+    - openjdk-8-jre-headless
+    - uuid-runtime
+    - pwgen
+    - curl

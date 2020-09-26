@@ -1,0 +1,12 @@
+FROM nginx:1.18.0-alpine
+ARG CONFIG_FILE
+
+# Copy SSL
+RUN mkdir /etc/nginx/tls
+COPY conf/tls/*.key /etc/nginx/tls/nginx.key
+COPY conf/tls/*.crt /etc/nginx/tls/nginx.crt
+
+# Copy configs
+COPY conf/nginx/docker_nginx.conf /etc/nginx/nginx.conf
+RUN echo ${CONFIG_FILE}
+COPY conf/nginx/${CONFIG_FILE} /etc/nginx/conf.d/${CONFIG_FILE}

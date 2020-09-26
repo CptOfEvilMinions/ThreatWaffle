@@ -1,0 +1,12 @@
+FROM logstash:7.7.0
+
+# Copy certs
+COPY conf/tls/*.crt /usr/share/logstash/ssl/logstash.crt
+COPY conf/tls/*.key /usr/share/logstash/ssl/logstash.key
+
+# Copy logstash.yml
+RUN rm -rf /usr/share/logstash/pipeline/logstash.conf
+COPY conf/logstash/logstash.yml /usr/share/logstash/config/logstash.yml
+
+# Copy pipeline configs
+COPY conf/logstash/pipeline/ /usr/share/logstash/pipeline

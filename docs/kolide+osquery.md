@@ -1,10 +1,15 @@
 # Kolide and OSQuery
 
-## Doorman vs Kolide
-This repo contains two branches which are Doorman and Kolide. Both are open source OSQuery fleet managers. Koide is used in the master branch.
+## Spin up stack with Docker
+1. `docker-compose -f docker-compose-kolide.yml up`
+1. `docker-compose -f docker-compose-kolide.yml run --rm kolide fleet prepare db --config /etc/kolide/kolide.yml`
+    1. Initializes Kolid database
+1. `docker-compose up -d`
+
+
 
 ## Setup Kolide OSQuery fleet manager
-0. openssl rand -base64 32
+0. `openssl rand -base64 32`
 0. Copy the output from above
 0. vim group_vars/kolide and set:
     1. kolide_jwt_key to output from above

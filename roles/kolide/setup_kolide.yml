@@ -1,0 +1,59 @@
+####################################################################
+#  Install/Setup Kolide
+####################################################################
+- name: Create Kolide user
+  user:
+    name: kolide
+    shell: /usr/sbin/nologin
+    
+- name: Create Kolide log directory
+  file:
+    path: '/var/log/osquery'
+    state: directory
+    owner: kolide
+    group: root
+
+- name: Create Kolide conf directory
+  file:
+    path: /etc/kolide
+    state: directory
+    owner: root
+    group: root
+
+- name: Copy Kolide conf
+  template:
+    src: conf/kolide/kolide.yml
+    dest: /etc/kolide/kolide.yml
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install unzip
+  package:
+    name: unzip
+    state: latest
+
+- name: Download Kolide
+  unarchive:
+    src: "{{ kolide_dl_url }}"
+    dest: /usr/local/bin
+    remote_src: yes
+
+- name: Intialize Kolide database
+  shell: /usr/local/bin/linux/fleet prepare db --config /etc/kolide/kolide.yml
+
+- name: Create kolide user
+  user:
+    name: kolide
+    shell: /usr/sbin/nologin
+
+- name: Copy Kolide SystemD
+  template:
+    src: conf/kolide/kolide.service
+    dest: /etc/systemd/system/kolide.service
+
+- name: Start Kolide service
+  service:
+    name: kolide
+    state: restarted
+    enabled: yes

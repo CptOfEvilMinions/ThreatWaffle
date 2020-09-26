@@ -1,0 +1,16 @@
+FROM kolide/fleet:3.1.0
+
+# Create a group and user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Create Kolide config dir
+RUN mkdir -p /etc/kolide/tls
+
+# Copy Kolide config
+COPY conf/kolide/docker_kolide.yml /etc/kolide/kolide.yml
+COPY conf/tls/*.crt /etc/kolide/tls/kolide.crt
+COPY conf/tls/*.key /etc/kolide/tls/kolide.key
+
+USER appuser
+EXPOSE 8080
+CMD ["fleet", "serve", "--config", "/etc/kolide/kolide.yml"]

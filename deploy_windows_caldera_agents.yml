@@ -1,3 +1,0 @@
-- hosts: win_agents
-  tasks:
-    - import_tasks: roles/agents/deploy_cagent.yml

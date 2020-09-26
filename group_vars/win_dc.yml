@@ -1,3 +1,0 @@
-# Domain controller settings
-ad_domain_name: '{{ base_domain }}'
-ad_safe_mode_password: 'StrawWhereverClaim5'

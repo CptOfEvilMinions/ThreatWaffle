@@ -1,0 +1,54 @@
+####################################################################
+# Install/Setup Nginx
+####################################################################
+- name: Install/Setup Nginx
+  package:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - nginx
+
+- name: Backup nginx conf
+  shell: cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+
+- name: Create TLS directory for NGINX
+  file:
+    path: /etc/nginx/tls
+    owner: root
+    group: root
+    state: directory
+
+- name: Copy nginx.conf
+  template:
+    src: conf/nginx/nginx.conf
+    dest:  /etc/nginx/nginx.conf
+
+- name: Copy nginx_kolide.conf
+  template:
+    src: conf/nginx/ansible_kolide.conf
+    dest: /etc/nginx/conf.d/kolide.conf
+
+- name: Stat Kolide cert
+  stat:
+    path: /etc/nginx/tls/kolide.crt
+  register: stat_dhparam
+
+- name: Generate Kolide public cert and private keyout
+  shell: openssl req -new -nodes -x509 -days 3650 -subj "/C={{ cert_country }}/ST={{ cert_state }}/L={{ cert_local }}/O={{ cert_org }}/CN={{ kolide_hostname }}.{{ base_domain }}" -keyout /etc/nginx/tls/kolide.key -out /etc/nginx/tls/kolide.crt
+  when: stat_dhparam.stat.exists == False
+
+- name: Change perms for certs
+  file:
+    path: "{{ item }}"
+    owner: 'root'
+    group: 'kolide'
+    mode: 0640
+  with_items:
+    - '/etc/nginx/tls/kolide.key'
+    - '/etc/nginx/tls/kolide.crt'
+
+- name: Start Nginx service
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes

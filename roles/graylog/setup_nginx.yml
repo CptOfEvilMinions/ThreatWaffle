@@ -1,0 +1,60 @@
+####################################################################
+# Install/Setup Nginx
+####################################################################
+- name: Install/Setup Nginx
+  package:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - nginx
+
+- name: Backup NGINX config
+  shell: cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+
+- name: Copy Nginx config
+  template:
+    src: conf/nginx/nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Create TLS directory
+  file:
+    path: /etc/nginx/tls
+    owner: root
+    group: root
+    state: directory
+    mode: 0755
+
+
+- name: Stat graylog.crt
+  stat:
+    path: /etc/nginx/ssl/graylog.crt
+  register: stat_dhparam
+
+- name: Create OpenSSL certificate and public key for graylog
+  shell: openssl req -new -nodes -x509 -days 3650 -subj "/C={{ cert_country }}/ST={{ cert_state }}/L={{ cert_local }}/O={{ cert_org }}/CN={{ graylog_hostname }}.{{ base_domain }}" -keyout /etc/nginx/tls/graylog.key -out /etc/nginx/tls/graylog.crt
+  when: stat_dhparam.stat.exists == False
+
+- name: Copy NGINX config
+  template:
+    src: conf/nginx/nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Copy NGINX config for Graylog
+  template:
+    src: conf/nginx/ansible_graylog.conf
+    dest: /etc/nginx/conf.d/graylog.conf
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Restart NGINX
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes

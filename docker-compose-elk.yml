@@ -1,0 +1,77 @@
+version: "2.2"
+services: 
+  ############################################# NGINX #############################################
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-nginx
+      args: 
+        CONFIG_FILE: 'docker_kibana.conf'
+    container_name: 'threatwaffle-nginx'
+    restart: unless-stopped
+    ports:
+      - 8000:80
+      - 8443:443
+    networks: 
+      - default
+      - es-backend
+    depends_on: 
+      - kibana
+    cpus: 2
+    mem_limit: 150M
+
+  ############################################# Logstash #############################################
+  logstash:
+    build:
+      context: .
+      dockerfile: docker/elk/Dockerfile-logstash
+    container_name: 'threatwaffle-logstash'
+    restart: unless-stopped
+    ports:
+      - 5044:5044
+    networks: 
+      - default
+      - es-backend
+    depends_on: 
+      - elasticsearch
+    cpus: 2
+    mem_limit: 1G
+
+  ############################################# Elasticsearch #############################################
+  elasticsearch:
+    build:
+      context: .
+      dockerfile: docker/elk/Dockerfile-elasticsearch
+    container_name: 'threatwaffle-elasticsearch'
+    restart: unless-stopped
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    networks: 
+      - default
+      - es-backend
+    ports: 
+      - 127.0.0.1:9200:9200
+    cpus: 2
+    mem_limit: 1G
+    
+  ############################################# Kibana #############################################
+  kibana:
+    build:
+      context: .
+      dockerfile: docker/elk/Dockerfile-kibana
+    container_name: 'threatwaffle-kibana'
+    restart: unless-stopped
+    networks: 
+      - es-backend
+    depends_on: 
+      - elasticsearch
+    cpus: 2
+    mem_limit: 1G
+
+volumes: 
+  es-data:
+
+networks: 
+  es-backend:

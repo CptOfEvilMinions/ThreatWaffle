@@ -1,0 +1,35 @@
+####################################################################
+# Install/Setup Elasticsearch
+####################################################################
+- name: Add Elastic GPG key
+  apt_key:
+    url: "{{ elastic_gpg_key_url }}"
+    state: present
+
+- name: Add Elastic repo
+  apt_repository:
+    repo: "{{ graylog_elastic_repo_url }}"
+    state: present
+
+- name: Install/Setup Elasticsearch
+  package:
+    name: "elasticsearch-oss"
+    state: latest
+
+- name: Rename Elasticsearch cluster name
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    regexp: '^cluster.name:'
+    line: 'cluster.name: {{ graylog_cluster_name }}'
+
+- name: Set auto_create_index
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    regexp: '^action.auto_create_index: '
+    line: 'action.auto_create_index: false'
+
+- name: Restart Elasticsearch
+  service:
+    name: elasticsearch
+    state: restarted
+    enabled: yes

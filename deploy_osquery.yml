@@ -1,0 +1,22 @@
+- hosts: 
+  become: yes
+  become_user: root
+  tasks:
+    - include_vars: group_vars/agents
+    ######################################## Windows ######################################## 
+    - win_ping:
+      - include_vars: group_vars/agents.yml
+      - include_vars: group_vars/win_dc.yml
+      - import_tasks: roles/windows/deploy_dns.yml
+      - import_tasks: roles/agents/deploy_osquery_windows.yml
+      - import_tasks: roles/windows/join_windows_to_domian.yml
+  
+
+    ######################################## macOS ########################################
+
+    ######################################## Linux ########################################
+
+    - import_tasks: roles/agents/deploy_osquery_centos.yml
+      when: ansible_distribution == "CentOS"
+    - import_tasks: roles/agents/deploy_osquery_ubuntu.yml
+      when: ansible_distribution == "Ubuntu"
