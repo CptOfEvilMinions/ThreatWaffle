@@ -1,0 +1,28 @@
+####################################################################
+#  Install/Setup Osquery
+####################################################################
+- name: Download and install Osquery
+  win_package:
+    path: "{{ osquery_win_dl_url }}"
+    state: present
+
+- name: Copy Kolide public certificate
+  win_template:
+    src: conf/osquery/certificate.crt
+    dest: 'C:\Program Files\Osquery\certs\certificate.crt'
+
+- name: Copy Osquery.flags
+  win_template:
+    src: conf/osquery/osquery.flags
+    dest: 'C:\Program Files\Osquery\osquery.flags'
+
+- name: Copy Osquery.key
+  win_template:
+    src: conf/osquery/osquery.key
+    dest: 'C:\Program Files\Osquery\osquery.key'
+
+- name: Start Osquery service
+  win_service:
+    name: Osqueryd
+    start_mode: auto
+    state: restarted

@@ -1,0 +1,22 @@
+- name: Get a cert from an https port
+  community.crypto.get_certificate:
+    host: "{{ kolide_hostname }}.{{ base_domain }}"
+    port: 8443
+  run_once: true
+  register: cert
+
+- set_fact:
+    kolide_public_cert: "{{ cert.cert }}"
+
+- name: Get Osquery enrollment secret from Kolide
+  uri:
+    url: "https://{{ kolide_hostname }}.{{ base_domain }}:{{ kolide_port }}/api/v1/kolide/spec/enroll_secret"
+    method: GET
+    return_content: yes
+    validate_certs: no
+    headers:
+      Authorization: "Bearer {{ lookup('env','KOLIDE_TOKEN') }}"
+  register: enroll_secret
+
+- set_fact:
+    osquery_enroll_secret: "{{ enroll_secret.json.specs.secrets[0].secret }}"

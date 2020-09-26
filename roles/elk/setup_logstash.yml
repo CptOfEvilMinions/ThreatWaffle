@@ -1,0 +1,35 @@
+################################################################################
+# Install Logstah
+################################################################################
+- name: Install Logstash
+  apt:
+    name: 'logstash=1:{{ elk_version }}-1'
+
+- name: Copy Logstash.yml
+  template:
+    src: 'conf/logstash/logstash.yml'
+    dest: '/usr/share/logstash/logstash.yml'
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Copy Logstash pipeline configs
+  template:
+    src: 'conf/logstash/pipeline/{{ item }}'
+    dest: '/etc/logstash/conf.d/{{ item }}'
+    mode: 0644
+    owner: root
+    group: root
+  with_items:
+    - '02-input-beats.conf'
+    - '30-output-es.conf'
+
+##########################################################
+# Since Logstash will only be run during the red team 
+# simulations it will be turned off by default
+##########################################################
+- name: Stop Logstah and disable service
+  service:
+    name: 'logstash'
+    state: 'restarted'
+    enabled: no

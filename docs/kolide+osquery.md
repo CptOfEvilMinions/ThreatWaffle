@@ -49,6 +49,12 @@
 0. ansible-playbook -i hosts deploy_windows_osquery_agents.yml
 
 ## Deploy Linux OSQuery agent
+### Get Kolide token
+1. `export KOLIDE_TOKEN=$(curl -k -X POST https://kolide.hackinglab.local:8443/api/v1/kolide/login -d '{"Username": "admin", "Password": "Password123*"}' | jq -r '.token')`
+    1. Connect to Kolide, authenticate, extract token, and place token in env variable
+1. 
+
+
 0. vim hosts
     1. Add hosts to linux_agents
 0.ansible-playbook -i hosts deploy_linux_osquery_agents.yml

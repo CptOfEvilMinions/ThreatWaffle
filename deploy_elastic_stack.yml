@@ -1,0 +1,11 @@
+- hosts: elastic
+  become: yes
+  become_user: root
+  tasks:
+    - include_vars: 'group_vars/sec_tools.yml'
+    #- import_tasks: 'roles/elk/init.yml'
+    #- import_tasks: 'roles/elk/setup_logstash.yml'
+    #- import_tasks: 'roles/elk/setup_elasticsearch.yml'
+    #- import_tasks: 'roles/elk/setup_kibana.yml'
+    #- import_tasks: 'roles/elk/setup_nginx.yml'
+    - import_tasks: 'roles/graylog/setup_ufw.yml'

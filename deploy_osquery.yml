@@ -1,22 +1,30 @@
-- hosts: 
-  become: yes
-  become_user: root
+- hosts: 'linux_agents,win_agents'
+  #become: yes
+  #become_user: root
   tasks:
-    - include_vars: group_vars/agents
+    - include_vars: 'group_vars/sec_tools.yml'
+
+    # Create variables for playbook
+    - import_tasks: 'roles/agents/init.yml'
+      delegate_to: localhost 
+    
     ######################################## Windows ######################################## 
     - win_ping:
-      - include_vars: group_vars/agents.yml
-      - include_vars: group_vars/win_dc.yml
-      - import_tasks: roles/windows/deploy_dns.yml
-      - import_tasks: roles/agents/deploy_osquery_windows.yml
-      - import_tasks: roles/windows/join_windows_to_domian.yml
+      when: ansible_distribution == "Windows"
+    #- include_vars: group_vars/agents.yml
+    #- include_vars: group_vars/win_dc.yml
+    #- import_tasks: roles/windows/deploy_dns.yml
+    - import_tasks: 'roles/agents/setup_osquery_windows.yml'
+      when: ansible_facts['os_family'] == "Windows"
+    #- import_tasks: roles/windows/join_windows_to_domian.yml
   
 
-    ######################################## macOS ########################################
+    # ######################################## macOS ########################################
+    # - imnport_tasks: 'role/agents'
 
-    ######################################## Linux ########################################
+    # ######################################## Linux ########################################
 
-    - import_tasks: roles/agents/deploy_osquery_centos.yml
-      when: ansible_distribution == "CentOS"
-    - import_tasks: roles/agents/deploy_osquery_ubuntu.yml
-      when: ansible_distribution == "Ubuntu"
+    # - import_tasks: roles/agents/deploy_osquery_centos.yml
+    #   when: ansible_distribution == "CentOS"
+    # - import_tasks: roles/agents/deploy_osquery_ubuntu.yml
+    #   when: ansible_distribution == "Ubuntu"

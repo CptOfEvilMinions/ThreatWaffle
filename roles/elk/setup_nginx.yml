@@ -1,0 +1,56 @@
+################################################################################
+# Install NGINX
+################################################################################
+- name: Install NGINX
+  apt:
+    name: ['nginx','apache2-utils']
+    state: latest
+
+- name: Copy nginx.conf
+  template:
+    src: 'conf/nginx/nginx.conf'
+    dest: '/etc/nginx/nginx.conf'
+    owner: root
+    group: root
+    mode: 0640
+
+- name: Create TLS directory
+  file:
+    path: /etc/nginx/tls
+    owner: root
+    group: root
+    state: directory
+    mode: 0755
+
+- name: Copy Self-signed public cert for kibana
+  template:
+    src: 'conf/tls/docker.key'
+    dest: '/etc/nginx/tls/kibana.key'
+    owner: 'root'
+    group: 'root'
+    mode: 0400
+
+- name: Copy Self-signed private key for kibana
+  template:
+    src: 'conf/tls/docker.crt'
+    dest: '/etc/nginx/tls/kibana.crt'
+    owner: 'root'
+    group: 'root'
+    mode: 0400
+
+- name: Copy kibana.conf
+  template:
+    src: 'conf/nginx/ansible_kibana.conf'
+    dest: '/etc/nginx/conf.d/kibana.conf'
+    owner: root
+    group: root
+    mode: 0640
+
+- name: Create htpasswd
+  shell: "htpasswd -b -c /etc/nginx/conf.d/kibana.htpasswd '{{ elk_username }}' '{{ elk_password }}'"
+
+- name: Restart NGINX
+  service:
+    name: 'nginx'
+    state: 'restarted'
+    enabled: yes

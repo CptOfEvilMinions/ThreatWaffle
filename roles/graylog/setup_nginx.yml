@@ -28,14 +28,21 @@
     mode: 0755
 
 
-- name: Stat graylog.crt
-  stat:
-    path: /etc/nginx/ssl/graylog.crt
-  register: stat_dhparam
+- name: Copy Self-signed public cert for Graylog
+  template:
+    src: 'conf/tls/docker.key'
+    dest: '/etc/nginx/tls/graylog.key'
+    owner: 'root'
+    group: 'root'
+    mode: 0400
 
-- name: Create OpenSSL certificate and public key for graylog
-  shell: openssl req -new -nodes -x509 -days 3650 -subj "/C={{ cert_country }}/ST={{ cert_state }}/L={{ cert_local }}/O={{ cert_org }}/CN={{ graylog_hostname }}.{{ base_domain }}" -keyout /etc/nginx/tls/graylog.key -out /etc/nginx/tls/graylog.crt
-  when: stat_dhparam.stat.exists == False
+- name: Copy Self-signed private key for Graylog
+  template:
+    src: 'conf/tls/docker.crt'
+    dest: '/etc/nginx/tls/graylog.crt'
+    owner: 'root'
+    group: 'root'
+    mode: 0400
 
 - name: Copy NGINX config
   template:

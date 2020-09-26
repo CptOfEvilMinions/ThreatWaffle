@@ -1,0 +1,61 @@
+####################################################################
+# Setup hostname
+####################################################################
+- name: Set hostname
+  hostname:
+    name: '{{ elk_hostname }}.{{ base_domain }}'
+
+####################################################################
+#  Setup Timedatectl
+####################################################################
+- name: Set time to {{ timezone }}
+  shell: timedatectl set-ntp on && timedatectl set-timezone {{ timezone }}
+
+####################################################################
+# Apt update
+####################################################################
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+    
+- name: Update all packages to the latest version
+  apt:
+    upgrade: dist
+
+####################################################################
+# Install software
+####################################################################
+- name: Install software
+  package:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - apt-transport-https
+    - htop
+    - tcpdump
+    - net-tools
+
+################################################################################
+# Add Elastic GPG key
+################################################################################
+- name: 'Add Elastic GPG key'
+  apt_key:
+    url: '{{ elastic_gpg_key_url }}'
+    state: 'present'
+
+- name: 'Add Elastic 7.X repo'
+  apt_repository:
+    repo: '{{ elastic_repo_url }}'
+    state: present
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+################################################################################
+# Install Java
+################################################################################
+- name: Install Java JDK 11
+  apt:
+    name: ['openjdk-11-jre','openjdk-11-jdk']
+    state: latest

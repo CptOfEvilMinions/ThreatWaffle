@@ -1,0 +1,19 @@
+####################################################################
+# Install/Setup FirewallD
+####################################################################
+- name: Setup Ubuntu UFW firewall
+  ufw:
+    rule: allow
+    name: OpenSSH
+- ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+- ufw:
+    rule: allow
+    port: '443'
+    proto: tcp
+- ufw:
+    rule: allow
+    port: '5044'
+    proto: tcp

@@ -3,10 +3,10 @@
   become_user: root
   tasks:
     - include_vars: 'group_vars/sec_tools.yml'
-    #- import_tasks: 'roles/kolide/init.yml'
-    #- import_tasks: 'roles/kolide/setup_redis.yml'
-    #- import_tasks: 'roles/kolide/setup_mysql.yml'
-    #- import_tasks: 'roles/kolide/setup_nginx.yml'
-    #- import_tasks: 'roles/kolide/setup_kolide.yml'
-    #- import_tasks: 'roles/kolide/setup_ufw.yml'
+    - import_tasks: 'roles/kolide/init.yml'
+    - import_tasks: 'roles/kolide/setup_redis.yml'
+    - import_tasks: 'roles/kolide/setup_mysql.yml'
+    - import_tasks: 'roles/kolide/setup_nginx.yml'
+    - import_tasks: 'roles/kolide/setup_kolide.yml'
+    - import_tasks: 'roles/kolide/setup_ufw.yml'
     - import_tasks: 'roles/kolide/setup_filebeat.yml'

@@ -28,24 +28,22 @@
     src: conf/nginx/ansible_kolide.conf
     dest: /etc/nginx/conf.d/kolide.conf
 
-- name: Stat Kolide cert
-  stat:
-    path: /etc/nginx/tls/kolide.crt
-  register: stat_dhparam
 
-- name: Generate Kolide public cert and private keyout
-  shell: openssl req -new -nodes -x509 -days 3650 -subj "/C={{ cert_country }}/ST={{ cert_state }}/L={{ cert_local }}/O={{ cert_org }}/CN={{ kolide_hostname }}.{{ base_domain }}" -keyout /etc/nginx/tls/kolide.key -out /etc/nginx/tls/kolide.crt
-  when: stat_dhparam.stat.exists == False
-
-- name: Change perms for certs
-  file:
-    path: "{{ item }}"
+- name: Copy Self-signed public cert for Graylog
+  template:
+    src: 'conf/tls/docker.key'
+    dest: '/etc/nginx/tls/kolide.key'
     owner: 'root'
-    group: 'kolide'
+    group: 'root'
     mode: 0640
-  with_items:
-    - '/etc/nginx/tls/kolide.key'
-    - '/etc/nginx/tls/kolide.crt'
+
+- name: Copy Self-signed private key for Graylog
+  template:
+    src: 'conf/tls/docker.crt'
+    dest: '/etc/nginx/tls/kolide.crt'
+    owner: 'root'
+    group: 'root'
+    mode: 0640
 
 - name: Start Nginx service
   service:
