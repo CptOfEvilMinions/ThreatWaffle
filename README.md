@@ -1,6 +1,8 @@
 # ThreatWaffle
 
+This repo contains the necessary Ansible playbooks and configs to setup the Threat Hunting envirnment for the blog series below.
 
+* [Part 1: Intro to Threat Hunting – Setting up the environment](https://holdmybeersecurity.com/2018/01/16/part-2a-intro-to-threat-hunting-with-kolide-fleet-osquery-powershell-empire-and-caldera-setup-environment/)
 
 ## Supported version
 * `Ansible v2.11+`
