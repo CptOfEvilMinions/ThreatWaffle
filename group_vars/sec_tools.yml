@@ -1,0 +1,17 @@
+############################################### Osquery ###############################################
+osquery_version: '4.8.0'
+osquery_exe_dl_url: 'https://pkg.osquery.io/windows/osquery-{{ osquery_version }}.msi'
+
+fleetdm_host: 'fleetdm.{{ base_domain }}'
+fleetdm_port: 443
+
+############################################### Sysmon ###############################################
+sysmon_version: '13.10'
+sysmon_exe_dl_url: 'https://download.sysinternals.com/files/Sysmon.zip'
+
+############################################### Winlogbeat ###############################################
+winlogbeat_version: '7.12.0'
+winlogbeat_exe_dl_url: 'https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-{{ winlogbeat_version }}-windows-x86_64.zip'
+
+logstash_ip_addr: 'elastic.{{ base_domain }}'
+logstash_port: 5044

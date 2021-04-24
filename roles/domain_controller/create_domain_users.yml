@@ -1,0 +1,25 @@
+####################################################################
+# Create domain users
+####################################################################
+- name: Wait for ADWS to start
+  win_service:
+    name: ADWS  
+  register: adws_result
+  retries: 30
+  delay: 10
+  until: adws_result.state == "running"
+
+- name: Ensure users are created and set credentials for each user
+  community.windows.win_domain_user:
+    name: "{{ item.username }}"
+    upn: "{{ item.username }}@{{ base_domain }}"
+    firstname: "{{ item.name.split(' ')[0] }}"
+    surname: "{{ item.name.split(' ')[1] }}"
+    password: "{{ domain_users_password }}"
+    state: present
+    domain_username: "{{ ansible_user }}"
+    domain_password: '{{ ansible_password }}'
+    domain_server: "{{ base_domain }}"
+  with_items:
+    - { username: "bgates", name: "Bob Gates" }
+    - { username: "sjobs", name: "Sheldon Jobs"}

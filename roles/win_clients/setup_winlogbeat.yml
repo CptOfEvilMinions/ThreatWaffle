@@ -1,0 +1,47 @@
+#########################################################
+# Install/Setup Winlogbeat
+#########################################################
+- name: Stat Sysmon download
+  ansible.windows.win_stat:
+    path: "%TEMP%\\winlogbeat-{{ winlogbeat_version }}-windows-x86_64.zip"
+  register: winlogbeat_download
+
+- name: Download Winlogbeat
+  ansible.windows.win_get_url:
+    url: "{{ winlogbeat_exe_dl_url }}"
+    dest: "%TEMP%\\winlogbeat-{{ winlogbeat_version }}-windows-x86_64.zip"
+  when: not winlogbeat_download.stat.exists
+
+- name: Unzip Winlogbeat
+  community.windows.win_unzip:
+    src: "%TEMP%\\winlogbeat-{{ winlogbeat_version }}-windows-x86_64.zip"
+    dest: "%TEMP%"
+  when: not winlogbeat_download.stat.exists
+
+- name: Copy Winlogbeat directory
+  win_copy:
+    src: "%TEMP%\\winlogbeat-{{ winlogbeat_version }}-windows-x86_64/"
+    dest: "C:\\Program Files\\Winlogbeat"
+    remote_src: yes
+
+- name: Check if service exists
+  win_service:
+    name: winlogbeat
+  register: winlogbeat_service
+
+- name: Install Winlogbeat
+  win_shell: "PowerShell.exe -ExecutionPolicy UnRestricted -File .\\install-service-winlogbeat.ps1"
+  args:
+    chdir: "C:\\Program Files\\Winlogbeat"
+  when: winlogbeat_service.exists == false
+
+- name: Copy Winlogbeat config file
+  template:
+    src: 'conf/win_clients/winlogbeat/winlogbeat.yml'
+    dest: "C:\\Program Files\\Winlogbeat\\winlogbeat.yml"
+
+- name: Restart Winlogbeat
+  ansible.windows.win_service:
+    name: 'winlogbeat'
+    state: restarted
+    start_mode: delayed

@@ -1,0 +1,6 @@
+- hosts: 'win_domain_controller'
+  tasks:
+    - import_tasks: 'roles/domain_controller/create_domain.yml'             # Create domain
+    - import_tasks: 'roles/domain_controller/create_dns_zone.yml'           # Create DNS revers zone
+    - import_tasks: 'roles/domain_controller/create_domain_users.yml'       # Create domain users
+    - import_tasks: 'roles/domain_controller/setup_domain_group_policy.yml' # Setup domain Group Policy

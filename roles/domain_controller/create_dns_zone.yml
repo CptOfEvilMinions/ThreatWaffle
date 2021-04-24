@@ -1,0 +1,45 @@
+####################################################################
+# Create DNS zone
+####################################################################
+- name: Set internal DNS server to itself
+  win_dns_client:
+    adapter_names: '*'
+    ipv4_addresses:
+      - '127.0.0.1'
+
+# https://github.com/ansible/ansible/issues/18738
+# https://titanwolf.org/Network/Articles/Article?AID=a9de7f4a-d083-4916-a1a4-5c555fa3279a#gsc.tab=0
+- name: Create reverse DNS zone
+  community.windows.win_dns_zone:
+    name: "{{ inventory_hostname | ipaddr('revdns') | regex_replace('^[0-9]+\\.', '') }}"
+    type: primary
+    replication: 'forest'
+    dynamic_update: 'secure'
+    state: present
+
+- name: Wait 600 seconds for dns.exe to start, waiting 5 seconds between each check
+  community.windows.win_wait_for_process:
+    process_name_exact: 'dns'
+    state: present
+    timeout: 500
+
+- name: Create DNS A records
+  community.windows.win_dns_record:
+    name: "{{ item.hostname }}"
+    type: "A"
+    value: "{{ item.ip_addr }}"
+    zone: "{{ base_domain }}"
+  with_items:
+    - { hostname: 'elastic', ip_addr: "{{ hostvars[inventory_hostname].groups.elastic }}" }
+    - { hostname: 'fleetdm', ip_addr: "{{ hostvars[inventory_hostname].groups.fleetdm }}" }
+
+
+- name: Create DNS CNAME records
+  community.windows.win_dns_record:
+    name: "{{ item.hostname }}"
+    type: "CNAME"
+    value: "{{ item.a_record }}"
+    zone: "{{ base_domain }}"
+  with_items:
+    - { hostname: 'siem', a_record: "elastic.{{ base_domain }}" }
+    - { hostname: 'fleet', a_record: "fleet.{{ base_domain }}" }

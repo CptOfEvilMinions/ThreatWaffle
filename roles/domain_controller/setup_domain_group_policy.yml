@@ -1,0 +1,51 @@
+####################################################################
+# Set domain firewall rules
+####################################################################
+- name: Copy PS script to configure GPO firewall
+  ansible.windows.win_template:
+    src: 'conf/domain_controller/ps_domain_firewall.ps1'
+    dest: '%TEMP%\ps_domain_firewall.ps1'
+
+- name: Run PS script to configure GPO firewall
+  ansible.windows.win_shell: '.\ps_domain_firewall.ps1'
+  args:
+    chdir: '%TEMP%'
+  register: ps_domain_firewall
+
+- debug:
+    msg: '{{ ps_domain_firewall.stdout_lines }}'
+
+####################################################################
+# Set domain logging 
+####################################################################
+- name: Copy PS script to configure GPO logging
+  ansible.windows.win_template:
+    src: 'conf/domain_controller/ps_enable_logging.ps1'
+    dest: '%TEMP%\ps_enable_logging.ps1'
+
+- name: Run PS script to configure GPO logging
+  ansible.windows.win_shell: '.\ps_enable_logging.ps1'
+  args:
+    chdir: '%TEMP%'
+  register: ps_domain_logging
+
+- debug:
+    msg: '{{ ps_domain_logging.stdout_lines }}'
+
+
+####################################################################
+# Disable Windows Defender
+####################################################################
+- name: Copy PS script to configure GPO Windows Defender
+  ansible.windows.win_template:
+    src: 'conf/domain_controller/ps_disable_defender.ps1'
+    dest: '%TEMP%\ps_disable_defender.ps1'
+
+- name: Run PS script to configure GPO firewall
+  ansible.windows.win_shell: '.\ps_disable_defender.ps1'
+  args:
+    chdir: '%TEMP%'
+  register: ps_domain_defender
+
+- debug:
+    msg: '{{ ps_domain_defender.stdout_lines }}'

@@ -1,0 +1,41 @@
+#########################################################
+# Install/Setup Sysmon
+#########################################################
+- name: Stat Sysmon download
+  ansible.windows.win_stat:
+    path: "%TEMP%\\Sysmon_{{ sysmon_version }}.zip"
+  register: sysmon_download
+
+- name: Download Sysmon
+  ansible.windows.win_get_url:
+    url: "{{ sysmon_exe_dl_url }}"
+    dest: "%TEMP%\\Sysmon_{{ sysmon_version }}.zip"
+  when: not sysmon_download.stat.exists
+
+- name: Unzip Sysmon
+  community.windows.win_unzip:
+    src: "%TEMP%\\Sysmon_{{ sysmon_version }}.zip"
+    dest: "%TEMP%"
+  when: not sysmon_download.stat.exists
+
+- name: Copy Sysmon config file
+  template:
+    src: 'conf/win_clients/sysmon/sysmonconfig.xml'
+    dest: "%TEMP%\\sysmonconfig.xml"
+
+- name: Check if service exists
+  win_service:
+    name: Sysmon64
+  register: sysmon_service
+
+- name: Install Sysmon
+  win_shell: '.\Sysmon64.exe -accepteula -i .\sysmonconfig.xml'
+  args:
+    chdir: "%TEMP%"
+  when: sysmon_service.exists == false
+
+- name: Restart Sysmon
+  ansible.windows.win_service:
+    name: 'Sysmon64'
+    state: restarted
+    start_mode: auto

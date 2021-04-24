@@ -1,0 +1,14 @@
+- hosts: win_clients
+  gather_facts: yes
+  tasks:
+    - include_vars: 'group_vars/sec_tools.yml'
+    - import_tasks: 'roles/win_clients/join_client_to_domain.yml' # Join Windows client to domain
+
+    #### Get FleetDM certificate ###
+    - import_tasks: 'roles/win_clients/get_fleetdm.yml'
+      delegate_to: localhost 
+      run_once: True
+
+    - import_tasks: 'roles/win_clients/setup_osquery.yml'       # Setup Osquery
+    - import_tasks: 'roles/win_clients/setup_sysmon.yml'        # Setup Sysmon
+    - import_tasks: 'roles/win_clients/setup_winlogbeat.yml'    # Setup Winlogbeat

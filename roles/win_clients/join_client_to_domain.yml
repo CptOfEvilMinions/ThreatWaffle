@@ -1,0 +1,23 @@
+####################################################################
+#  Set Primary DNS server
+####################################################################
+- win_dns_client:
+    adapter_names: "*"
+    ipv4_addresses:
+      - '{{ hostvars[inventory_hostname].groups.win_domain_controller }}'
+
+####################################################################
+# Join Windows client to domain
+####################################################################
+- name: Join windows host to {{ base_domain }} domain
+  win_domain_membership:
+    dns_domain_name: '{{ base_domain }}'
+    hostname: '{{ ansible_hostname }}'
+    domain_admin_user: 'administrator@{{ base_domain }}'
+    domain_admin_password: '{{ ad_safe_mode_password }}'
+    state: domain
+  register: domain_state
+
+- name: Reboot machine when to join the domain
+  win_reboot:
+  when: domain_state.reboot_required
