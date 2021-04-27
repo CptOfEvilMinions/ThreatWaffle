@@ -3,3 +3,4 @@ conf/tls/*.crt
 conf/tls/openssl.conf
 group_vars/windows.yml
 group_vars/fleetdm.yml
+json_logs/*.json
