@@ -49,9 +49,16 @@ This repo contains the necessary Ansible playbooks and configs to setup the Thre
 * [Greater Visibility Through PowerShell Logging](https://www.fireeye.com/blog/threat-research/2016/02/greater_visibilityt.html)
 * [Windows Command Line Auditing](https://nxlog.co/documentation/nxlog-user-guide/windows-command-line-auditing.html)
 * [Set-GPPrefRegistryValue](https://docs.microsoft.com/en-us/powershell/module/grouppolicy/set-gpprefregistryvalue?view=windowsserver2019-ps)
+* [Set-Content: The PowerShell Way to Write to a File](https://adamtheautomator.com/powershell-write-to-file/)
+* [How to Add Computers to a Domain Using PowerShell](https://petri.com/add-computer-to-domain-powershell)
+* [How to set primary and secondary DNS server addresses with PowerShell](https://www.jorgebernhardt.com/how-to-set-dns-server-addresses-with-set-dnsclientserveraddress/#:~:text=To%20set%20the%20DNS%20servers,DnsClientServerAddress%20with%20the%20following%20syntax.&text=The%20Set%2DDnsClientServerAddress%20set%20the,using%20a%20specified%20index%20value.)
 * []()
 * []()
 * []()
+* []()
+* []()
+* []()
+
 
 ### FleetDM/Kolide/Osquery
 * [How To Install and Secure Redis on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-18-04)
